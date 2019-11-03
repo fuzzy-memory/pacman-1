@@ -15,7 +15,7 @@ public class Pacman {
     public static int Dim=20;
     ImageIcon iconPac = null;
     public Image imgPac;
-    private Image imgPacRight, imgPacLeft, imgPacUp, imgPacDown;
+    public Image imgPacRight, imgPacLeft, imgPacUp, imgPacDown;
     private String pacRightFile = "PacRight.gif";
     private String pacLeftFile = "PacLeft.gif";
     private String pacUpFile = "PacUp.gif";
@@ -63,9 +63,9 @@ public class Pacman {
                 ver--;
             else if (direction == DOWN && !(map[ver + 1][hor] == '1' || map[ver + 1][hor] == '8'))
                 ver++;
-            if (direction == LEFT && map[ver][hor - 1] == 'w')
+            if (direction == LEFT && map[ver][hor] == 'w')
                 hor = 27;
-            else if (direction == RIGHT && map[ver][hor + 1] == 'w')
+            else if (direction == RIGHT && map[ver][hor] == 'w')
                 hor = 0;
             x=(hor)*20;
             y=(ver)*20+20;
@@ -82,9 +82,15 @@ public class Pacman {
         if(map[ver][hor]=='2'){
             map[ver][hor]='0';
         }
-        if(map[ver][hor]=='3'){
-            map[ver][hor]=0;
+        if(map[ver][hor]=='4') {
+            map[ver][hor] = '5';
         }
-
+        if(map[ver][hor]=='3'){
+            map[ver][hor]='0';
+        }
+        if(map[ver][hor]=='6'){
+            map[ver][hor]='5';
+        }
+        //System.out.println(ver+" "+hor);
     }
 }
