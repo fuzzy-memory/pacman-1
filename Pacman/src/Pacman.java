@@ -14,6 +14,7 @@ public class Pacman {
     public static int direction=LEFT;
     public static int Dim=20;
     ImageIcon iconPac = null;
+    boolean Energized = false;
     public Image imgPac;
     public Image imgPacRight, imgPacLeft, imgPacUp, imgPacDown;
     private String pacRightFile = "PacRight.gif";
@@ -87,9 +88,11 @@ public class Pacman {
         }
         if(map[ver][hor]=='3'){
             map[ver][hor]='0';
+            Energized=true;
         }
         if(map[ver][hor]=='6'){
             map[ver][hor]='5';
+            Energized=true;
         }
         //System.out.println(ver+" "+hor);
     }
