@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
+import java.util.Random;
 
 import static java.lang.Math.abs;
 
@@ -16,17 +17,21 @@ public class Ghost {
     public static final int pscatterx=3,pscattery=4;
     public int counter=0;
     public int ver;
+    public boolean isFrightened = false;
     public int hor;
     public int x;
     public int y;
     public int direction=LEFT;
     public int Dim=20;
+
     ImageIcon iconGhost = null;
     public Image imgGhost;
     public Image imgGhostRight;
     public Image imgGhostUp;
     public Image imgGhostDown;
     public Image imgGhostLeft;
+    public Image imgGhostScared;
+    private String ghostScaredFile="scared.gif";
     private String inkyRightFile = "inkyRight.gif";
     private String blinkyRightFile = "blinkyRight.gif";
     private String pinkyRightFile = "pinkyRight.gif";
@@ -174,6 +179,13 @@ public class Ghost {
             }
             imgGhostUp = iconGhost.getImage();
         }
+        URL imgURL = getClass().getClassLoader().getResource(ghostScaredFile);
+        if (imgURL != null) {
+            iconGhost = new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + ghostScaredFile);
+        }
+        imgGhostScared = iconGhost.getImage();
         imgGhost = imgGhostLeft;
         ver=starty;
         hor=startx;
@@ -202,6 +214,20 @@ public class Ghost {
                 decision=i;
         direction=decision;
         //System.out.println(map[ver][hor]+" "+ dist[0]+" "+dist[1]+" "+dist[2]+" "+dist[3]+" "+ map[ver+1][hor]);
+        loadImage(decision);
+    }
+
+    void update(char[][] map,int targetx,int targety){
+
+        move(map);
+        if(isFrightened)
+            frightened(map);
+        else if(map[ver][hor]=='4'||map[ver][hor]=='5'||map[ver][hor]=='6') {
+            intersectionCalc(map, targetx, targety);
+        }
+        //System.out.println(map[ver][hor]+" "+ver+" "+hor);
+    }
+    void loadImage(int decision){
         if(decision==LEFT)
             imgGhost=imgGhostLeft;
         else if(decision==RIGHT)
@@ -212,7 +238,43 @@ public class Ghost {
             imgGhost=imgGhostDown;
     }
 
-    void update(char[][] map,int targetx,int targety){
+    void frightened(char[][] map){
+        if(map[ver][hor]=='4'||map[ver][hor]=='5'||map[ver][hor]=='6'){
+            int decision = (int)(Math.random()*3);
+            if(decision==LEFT && map[ver][hor-1]=='1'){
+                if(map[ver-1][hor]!='1')
+                    decision=UP;
+                else if(map[ver][hor+1]!='1')
+                    decision=RIGHT;
+                else if(map[ver+1][hor]!='1')
+                    decision=DOWN;
+            }else if(decision==RIGHT && map[ver][hor+1]=='1'){
+                if(map[ver+1][hor]!='1')
+                    decision=DOWN;
+                else if(map[ver][hor-1]!='1')
+                    decision=LEFT;
+                else if(map[ver-1][hor]!='1')
+                    decision=UP;
+            }else if(decision==UP && map[ver-1][hor]=='1'){
+                if(map[ver][hor+1]!='1')
+                    decision=RIGHT;
+                else if(map[ver+1][hor]!='1')
+                    decision=DOWN;
+                else if(map[ver][hor]!='1')
+                    decision=UP;
+            }else if(decision==DOWN && map[ver+1][hor]=='1'){
+                if(map[ver][hor-1]!='1')
+                    decision=LEFT;
+                else if(map[ver-1][hor]!='1')
+                    decision=UP;
+                else if(map[ver][hor+1]!='1')
+                    decision=RIGHT;
+            }
+            direction=decision;
+            imgGhost=imgGhostScared;
+        }
+    }
+    void move(char[][] map){
         counter++;
         if(counter%21==0) {
             if (direction == LEFT && !(map[ver][hor - 1] == '1' || map[ver][hor - 1] == '8'))
@@ -240,10 +302,12 @@ public class Ghost {
             else if (direction == DOWN && !(map[ver + 1][hor] == '1' || map[ver + 1][hor] == '8'))
                 y+=1;
         }
-
-        if(map[ver][hor]=='4'||map[ver][hor]=='5'||map[ver][hor]=='6') {
-            intersectionCalc(map, targetx, targety);
-        }
-        //System.out.println(map[ver][hor]+" "+ver+" "+hor);
+    }
+    void setFrightened(boolean x){
+        isFrightened=x;
+        if(x)
+            imgGhost=imgGhostScared;
+        else
+            loadImage(direction);
     }
 }
