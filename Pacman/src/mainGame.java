@@ -104,8 +104,9 @@ public class mainGame extends JFrame implements KeyListener{
     private static final int CHASE = 0, SCATTER=1, FRIGHTENED=2;
     //public static int x = (hor)*20;
     //public static int y = (ver)*20+20;
-    public static int gameMode= 0;
+    public static int gameMode= SCATTER;
     public static int dist= 1;
+    public static boolean flag=false;
 
     public static final int PADDING = 20;  // padding from the border
 
@@ -173,7 +174,7 @@ public class mainGame extends JFrame implements KeyListener{
                 repaint();  // Refresh the JFrame, callback paintComponent()
             }
         };
-        
+
         addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -235,12 +236,61 @@ public class mainGame extends JFrame implements KeyListener{
             }
         });
         // Allocate a Timer to run updateTask's actionPerformed() after every delay msec
+        Thread changeMode =new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Thread.sleep(7000);
+                    gameMode=CHASE;
+                    Thread.sleep(20000);
+                    gameMode=SCATTER;
+                    Thread.sleep(7000);
+                    gameMode=CHASE;
+                    Thread.sleep(20000);
+                    gameMode=SCATTER;
+                    Thread.sleep(5000);
+                    gameMode=CHASE;
+                    Thread.sleep(20000);
+                    gameMode=SCATTER;
+                    Thread.sleep(5000);
+                    gameMode=CHASE;
+                }catch(Exception e){
+                    System.out.println("Error has occurred");
+                }
+            }
+        });
         new Timer(10, updateTask).start();
-
+        changeMode.start();
     }
 
     public void update() {
         pacman.update(map);
+        if(pacman.Energized){
+            pacman.Energized=false;
+            inky.setFrightened(true);
+            blinky.setFrightened(true);
+            pinky.setFrightened(true);
+            clyde.setFrightened(true);
+            Thread frightened=new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        Thread.sleep(6000);
+                        //pacman.Energized=false;
+                        inky.setFrightened(false);
+                        blinky.setFrightened(false);
+                        pinky.setFrightened(false);
+                        clyde.setFrightened(false);
+                    }catch(Exception e){
+                        System.out.println("Error has occurred");
+                    }
+                }
+            });
+            if(frightened.isAlive()){
+                frightened.interrupt();
+            }
+            frightened.start();
+        }
         if(gameMode==CHASE) {
             blinky.update(map, pacman.hor, pacman.ver);
             if (pacman.direction == Pacman.LEFT && Pacman.hor - 4 >= 0)
@@ -283,6 +333,7 @@ public class mainGame extends JFrame implements KeyListener{
             inky.update(map,Ghost.iscatterx,Ghost.iscattery);
             clyde.update(map,Ghost.cscatterx,Ghost.cscattery);
         }
+
     }
 
     @Override
