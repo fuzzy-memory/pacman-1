@@ -1,7 +1,7 @@
 import java.awt.*;     // Using AWT's Graphics and Color
 import java.net.URL;
 import javax.swing.*;
-public class Pacman {
+public class Pacman implements java.io.Serializable{
     public static final int LEFT = 0;
     public static final int RIGHT = 1;
     public static final int UP = 2;
@@ -13,8 +13,10 @@ public class Pacman {
     public static int y = (ver)*20+20;
     public static int direction=LEFT;
     public static int Dim=20;
+    public int Lives = 3;
     ImageIcon iconPac = null;
     boolean Energized = false;
+    boolean atePellet=false;
     public Image imgPac;
     public Image imgPacRight, imgPacLeft, imgPacUp, imgPacDown;
     private String pacRightFile = "PacRight.gif";
@@ -82,9 +84,11 @@ public class Pacman {
         }
         if(map[ver][hor]=='2'){
             map[ver][hor]='0';
+            atePellet=true;
         }
         if(map[ver][hor]=='4') {
             map[ver][hor] = '5';
+            atePellet=true;
         }
         if(map[ver][hor]=='3'){
             map[ver][hor]='0';
@@ -95,5 +99,16 @@ public class Pacman {
             Energized=true;
         }
         //System.out.println(ver+" "+hor);
+    }
+    boolean collision(Ghost g){
+        if(ver==g.ver && hor==g.hor)
+            return true;
+        return false;
+    }
+    void reset(){
+        ver=26;
+        hor=13;
+        direction=LEFT;
+        imgPac=imgPacLeft;
     }
 }
